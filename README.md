@@ -39,7 +39,6 @@ Unlike traditional systems like Git, Lyrids focuses on **semantic diffs** instea
 ```bash
 lyr init           # Initialize a new lyrids repo
 lyr status         # Show unstaged changes
-lyr commit         # Create semantic
 lyr commit         # Create semantic commit from changes
 lyr log            # Show commit DAG
 lyr branch         # Create/switch branches
@@ -47,3 +46,27 @@ lyr checkout       # Reconstruct folder from a given commit/branch
 lyr merge          # Merge two branches (patch-aware)
 lyr snapshot       # Manually create a snapshot
 lyr clone <repo>   # Clone a lyrids repo (experimental)
+```
+## 📁 Structure Overview
+
+```
+.lyrids/
+├── commits/           # Each commit as a semantic patch
+├── snapshots/         # Snapshots of full project state
+├── branches.json      # Branch pointers
+├── index.json         # Staging area (optional)
+└── config.json        # User config
+```
+
+## 🪪 License
+
+This project is licensed under the [MIT License](LICENSE).
+
+## 🙌 Contributing
+
+Contributions are currently closed while the project reaches a functional MVP.
+Once stable, contribution guidelines and issue tracking will be enabled.
+
+## 📍 Inspiration
+
+Lyrids is inspired by tools like [Git](https://git-scm.com/), [Pijul](https://pijul.org/), and [Darcs](https://darcs.net/), but takes a distinct approach to how change is stored and replayed.
