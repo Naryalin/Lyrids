@@ -40,3 +40,10 @@ Unlike traditional systems like Git, Lyrids focuses on **semantic diffs** instea
 lyr init           # Initialize a new lyrids repo
 lyr status         # Show unstaged changes
 lyr commit         # Create semantic
+lyr commit         # Create semantic commit from changes
+lyr log            # Show commit DAG
+lyr branch         # Create/switch branches
+lyr checkout       # Reconstruct folder from a given commit/branch
+lyr merge          # Merge two branches (patch-aware)
+lyr snapshot       # Manually create a snapshot
+lyr clone <repo>   # Clone a lyrids repo (experimental)
