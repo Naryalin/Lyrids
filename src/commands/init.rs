@@ -1,10 +1,11 @@
 use std::fs::{self, File};
 use std::path::Path;
+use crate::utils::repo::repo_exists;
 
 pub fn init_repo() {
     let repo_path = Path::new(".lyrids");
 
-    if !repo_path.exists() {
+    if !repo_exists() {
         fs::create_dir_all(repo_path).expect("Failed to create .lyrids directory");
         println!("Initialized Lyrids repository");
 
