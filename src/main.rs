@@ -1,5 +1,6 @@
 mod commands;
 mod utils;
+mod ignore;
 use commands::init::init_repo;
 use commands::commit::commit_repo;
 use commands::status::status_repo;

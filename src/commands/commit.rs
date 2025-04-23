@@ -1,9 +1,12 @@
 use std::collections::HashMap;
+use std::env;
 use std::fs::{self, File};
-use std::io::{Read, Write};
-use std::path::{Path, PathBuf};
+use std::io::Write;
+use std::path::Path;
 use crate::utils::repo::repo_exists;
+use crate::ignore::ignore::{get_ignore_matcher, is_ignored};
 use blake3::hash;
+use globset::GlobSet;
 use serde_json;
 
 pub fn commit_repo() {
@@ -67,21 +70,38 @@ fn load_index_data(path: &Path) -> HashMap<String, String> {
 
 // Obtiene todos los archivos en el directorio actual
 fn get_files_in_directory() -> Vec<String> {
-    let current_dir = Path::new(".");
     let mut files = vec![];
+    let matcher = get_ignore_matcher(".lyrignore");
 
-    for entry in fs::read_dir(current_dir).expect("Failed to read directory") {
-        if let Ok(entry) = entry {
-            let path = entry.path();
-            if path.is_file() {
-                if let Some(file_name) = path.file_name() {
-                    if let Some(file_str) = file_name.to_str() {
-                        files.push(file_str.to_string());
+    let root = env::current_dir().expect("Can't get current dir");
+
+    fn visit_dirs(dir: &Path, files: &mut Vec<String>, matcher: &GlobSet, root: &Path) {
+        if dir.is_dir() {
+            for entry in fs::read_dir(dir).expect("Failed to read directory") {
+                if let Ok(entry) = entry {
+                    let path = entry.path();
+
+                    // Obtener el path relativo al root
+                    let rel_path = path.strip_prefix(root).unwrap_or(&path);
+
+                    if is_ignored(rel_path, matcher) {
+                        println!("Ignorando: {}", rel_path.display()); // 👈 aquí se imprime
+                        continue;
+                    }
+
+                    if path.is_dir() {
+                        visit_dirs(&path, files, matcher, root);
+                    } else if path.is_file() {
+                        if let Some(p) = rel_path.to_str() {
+                            files.push(p.to_string());
+                        }
                     }
                 }
             }
         }
     }
+
+    visit_dirs(&root, &mut files, &matcher, &root);
     files
 }
 

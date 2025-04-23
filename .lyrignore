@@ -13,8 +13,10 @@ Cargo.lock
 # MSVC Windows builds of rustc generate these, which store debugging information
 *.pdb
 
-# Ignore .lyrids as this repo is for creating a VCS alternative
-.lyrids
+# Ignore .git files
+.gitignore
+.git
+.gitattributes
 
 # Added by cargo
 
