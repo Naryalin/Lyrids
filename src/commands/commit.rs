@@ -85,7 +85,6 @@ fn get_files_in_directory() -> Vec<String> {
                     let rel_path = path.strip_prefix(root).unwrap_or(&path);
 
                     if is_ignored(rel_path, matcher) {
-                        println!("Ignorando: {}", rel_path.display()); // 👈 aquí se imprime
                         continue;
                     }
 

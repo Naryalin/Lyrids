@@ -6,7 +6,7 @@ pub fn get_ignore_matcher(ignore_file: &str) -> GlobSet {
     let mut builder = GlobSetBuilder::new();
 
     // Ignora siempre .lyrids (esto es fijo)
-    builder.add(Glob::new(".lyrids/**").unwrap());
+    builder.add(Glob::new("**/.lyrids/**").unwrap());
 
     if let Ok(lines) = fs::read_to_string(ignore_file) {
         for line in lines.lines() {
@@ -15,15 +15,17 @@ pub fn get_ignore_matcher(ignore_file: &str) -> GlobSet {
                 continue;
             }
 
-            let normalized = if trimmed.starts_with('/') {
-                // Si empieza con '/', es relativo a raíz
-                format!(".{}", trimmed) // ejemplo: `/target` -> `./target`
+            let glob_pattern = if trimmed.starts_with('/') {
+                // Trata como relativo a raíz del repo
+                format!("{}/**", trimmed.trim_start_matches('/'))
+            } else if trimmed.ends_with('/') {
+                // Si termina en /, es un directorio
+                format!("**/{}**", trimmed)
             } else {
-                // Si no, ignoramos en cualquier subdirectorio
-                format!("**/{}", trimmed)
+                trimmed.to_string()
             };
 
-            if let Ok(glob) = Glob::new(&normalized) {
+            if let Ok(glob) = Glob::new(&glob_pattern) {
                 builder.add(glob);
             }
         }
@@ -33,5 +35,11 @@ pub fn get_ignore_matcher(ignore_file: &str) -> GlobSet {
 }
 
 pub fn is_ignored(path: &Path, matcher: &GlobSet) -> bool {
-    matcher.is_match(path)
+    // Convierte a una ruta estilo Unix antes de comparar
+    if let Some(path_str) = path.to_str() {
+        let unix_style_path = path_str.replace("\\", "/");
+        matcher.is_match(unix_style_path)
+    } else {
+        false
+    }
 }
